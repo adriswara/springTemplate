@@ -15,14 +15,31 @@ public class KaryawanController {
     @Autowired
     private KaryawanRepository karyawanRepository;
 
-    @GetMapping("/get")
+    @GetMapping
     public List<Karyawan> getAllKaryawan() {
         return karyawanRepository.findAll();
     }
 
-    @PostMapping("/post")
+    @PostMapping
     public Karyawan createKaryawan(@RequestBody Karyawan karyawan) {
         return karyawanRepository.save(karyawan);
+    }
+
+    @DeleteMapping("/{karyawanId}")
+    public void deleteKaryawan(@PathVariable long karyawanId) {
+        karyawanRepository.deleteById(karyawanId);
+    }
+
+    @PutMapping("/{karyawanId}")
+    public Karyawan editKaryawan(@PathVariable long karyawanId, @RequestBody Karyawan updatedKaryawan) {
+        return karyawanRepository.findById(karyawanId).map(karyawan -> {
+            karyawan.setName(updatedKaryawan.getName());
+            karyawan.setNik(updatedKaryawan.getNik());
+            return karyawanRepository.save(karyawan);
+        }).orElseGet(() ->{
+            updatedKaryawan.setId(karyawanId);
+            return karyawanRepository.save(updatedKaryawan);
+        });
     }
 
 
